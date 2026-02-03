@@ -273,6 +273,18 @@ impl ConnectionRpcChannel {
             Ok(params) => return server.workspace_did_change_watched_files(&params),
             Err(notification) => notification,
         };
+        let notification = match extract::<notification::DidCreateFiles>(notification) {
+            Ok(params) => return server.workspace_did_create_files(&params),
+            Err(notification) => notification,
+        };
+        let notification = match extract::<notification::DidRenameFiles>(notification) {
+            Ok(params) => return server.workspace_did_rename_files(&params),
+            Err(notification) => notification,
+        };
+        let notification = match extract::<notification::DidDeleteFiles>(notification) {
+            Ok(params) => return server.workspace_did_delete_files(&params),
+            Err(notification) => notification,
+        };
 
         if !notification.method.starts_with("$/") {
             debug!("Unhandled notification: {notification:?}");
